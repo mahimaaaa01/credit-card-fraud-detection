@@ -283,8 +283,6 @@ if predict_button:
     })
 
     st.table(summary)
-
-
 # -----------------------------
 # Model Performance
 # -----------------------------
@@ -294,55 +292,15 @@ st.divider()
 st.header("📈 Model Performance")
 
 st.write(
-    "Performance metrics calculated on the Credit Card Fraud Detection dataset."
+    "Performance metrics obtained during evaluation of the trained "
+    "Logistic Regression model."
 )
 
-# Load dataset
-evaluation_data = pd.read_csv("creditcard.csv")
-
-X_eval = evaluation_data.drop("Class", axis=1)
-y_eval = evaluation_data["Class"]
-
-# Scale features
-X_eval_scaled = scaler.transform(X_eval)
-
-# Predictions
-evaluation_probability = model.predict_proba(
-    X_eval_scaled
-)[:, 1]
-
-evaluation_prediction = (
-    evaluation_probability >= threshold
-).astype(int)
-
-
-# Calculate metrics
-from sklearn.metrics import (
-    accuracy_score,
-    precision_score,
-    recall_score,
-    f1_score
-)
-
-accuracy = accuracy_score(
-    y_eval,
-    evaluation_prediction
-)
-
-precision = precision_score(
-    y_eval,
-    evaluation_prediction
-)
-
-recall = recall_score(
-    y_eval,
-    evaluation_prediction
-)
-
-f1 = f1_score(
-    y_eval,
-    evaluation_prediction
-)
+# Pre-calculated model metrics
+accuracy = 0.9988
+precision = 0.6201
+recall = 0.8293
+f1 = 0.7096
 
 
 # Display metrics
@@ -372,23 +330,26 @@ with col4:
         f"{f1 * 100:.2f}%"
     )
 
+
 # -----------------------------
 # Confusion Matrix
 # -----------------------------
 
-from sklearn.metrics import confusion_matrix
-
-cm = confusion_matrix(
-    y_eval,
-    evaluation_prediction
-)
-
 st.subheader("🔎 Confusion Matrix")
 
 cm_data = pd.DataFrame(
-    cm,
-    index=["Actual Legitimate", "Actual Fraud"],
-    columns=["Predicted Legitimate", "Predicted Fraud"]
+    [
+        [284065, 250],
+        [84, 408]
+    ],
+    index=[
+        "Actual Legitimate",
+        "Actual Fraud"
+    ],
+    columns=[
+        "Predicted Legitimate",
+        "Predicted Fraud"
+    ]
 )
 
 st.dataframe(
@@ -396,14 +357,12 @@ st.dataframe(
     use_container_width=True
 )
 
+
 # -----------------------------
 # Class Distribution
 # -----------------------------
 
 st.subheader("📊 Transaction Class Distribution")
-
-legitimate_count = int((y_eval == 0).sum())
-fraud_count = int((y_eval == 1).sum())
 
 distribution_data = pd.DataFrame({
     "Transaction Type": [
@@ -411,15 +370,15 @@ distribution_data = pd.DataFrame({
         "Fraud"
     ],
     "Count": [
-        legitimate_count,
-        fraud_count
+        284315,
+        492
     ]
 })
 
 st.bar_chart(
     distribution_data.set_index("Transaction Type")
 )
-    # -----------------------------
+ # -----------------------------
 # Batch CSV Prediction
 # -----------------------------
 
